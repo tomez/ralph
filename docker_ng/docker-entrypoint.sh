@@ -35,21 +35,16 @@ function push_env_vars_to_config() {
 
 push_env_vars_to_config "$db_conf_path" "${db_env_variables[@]}"
 
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-#cd $DIR
-
 export DEBIAN_FRONTEND=noninteractive
-
-# pass the error (ex. when user already exist);
-# by muting the error, this script could be use to upgrade data container too
-$RALPH_EXEC createsuperuser --noinput --username ralph --email ralph@allegro.pl || true
-python3 $RALPH_DIR/docker_ng/createsuperuser.py
 
 #cd $RALPH_DIR
 
-$RALPH_EXEC migrate --noinput
-$RALPH_EXEC collectstatic --noinput
-$RALPH_EXEC sitetree_resync_apps
+ralph migrate --noinput
 
+# pass the error (ex. when user already exist);
+# by muting the error, this script could be use to upgrade data container too
+ralph createsuperuser --noinput --username ralph --email ralph@allegro.pl || true
+python3 /var/local/ralph/createsuperuser.py
 
-
+ralph collectstatic --noinput
+ralph sitetree_resync_apps

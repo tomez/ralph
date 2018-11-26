@@ -21,6 +21,9 @@ COPY ralph-core_3.0.0-48_amd64.deb /tmp
 RUN dpkg -i /tmp/ralph-core_3.0.0-48_amd64.deb
 RUN apt-get -f install
 
+COPY createsuperuser.py /var/local/ralph/
+COPY docker-entrypoint.sh /var/local/ralph/
+
 ENV PATH=/opt/ralph/ralph-core/bin/:$PATH
 
 # DB
