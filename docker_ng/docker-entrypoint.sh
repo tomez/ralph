@@ -1,8 +1,7 @@
 #!/bin/bash
 set -e
-FIRST_RUN_FILENAME="docker_first_run"
-RALPH_CONF_DIR="/etc/ralph"
-RALPH_LOCAL_DIR="/var/local/ralph"
+
+ARG=${1:-start}
 
 DB_ENV_VARIABLES=(
     DATABASE_NAME
@@ -12,9 +11,7 @@ DB_ENV_VARIABLES=(
     DATABASE_PORT
     DATABASE_ENGINE
 )
-# TODO: /etc/ralph/conf.d as variable
-DB_CONF_PATH="${RALPH_CONF_DIR}/conf.d/database.conf"
-DB_CONF_PATH="/tmp/docker_ng/database.conf"
+DB_CONF_PATH="${RALPH_CONF_DIR}/conf.d/databases.conf"
 
 REDIS_ENV_VARIABLES=(
     REDIS_HOST
@@ -23,7 +20,6 @@ REDIS_ENV_VARIABLES=(
     REDIS_PASSWORD
 )
 REDIS_CONF_PATH="${RALPH_CONF_DIR}/conf.d/redis.conf"
-REDIS_CONF_PATH="/tmp/docker_ng/redis.conf"
 
 function push_env_vars_to_config() {
     local conf_path=$1
@@ -40,3 +36,12 @@ function push_env_vars_to_config() {
 push_env_vars_to_config "$DB_CONF_PATH" "${DB_ENV_VARIABLES[@]}"
 push_env_vars_to_config "$REDIS_CONF_PATH" "${REDIS_ENV_VARIABLES[@]}"
 
+set -a
+source ${RALPH_CONF_DIR}/ralph.conf
+for f in ${RALPH_CONF_DIR}/conf.d/*.conf; do source $f; done
+
+if [ "$ARG" = "start" ]; then
+    "${RALPH_LOCAL_DIR}/start-ralph.sh"
+elif [ "$ARG" = "init" ]; then
+    "${RALPH_LOCAL_DIR}/init-ralph.sh"
+fi

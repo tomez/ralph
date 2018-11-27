@@ -19,34 +19,24 @@ RUN apt-get update
 # TODO: change this after uploading new image to ppa/bintray
 #RUN apt-get -y install ralph-core
 RUN apt-get -y install python3 python3-dev libmysqlclient-dev
-COPY ralph-core_3.0.0-48_amd64.deb /tmp
-RUN dpkg -i /tmp/ralph-core_3.0.0-48_amd64.deb
+COPY ralph-core_3.0.0-59_amd64.deb /tmp
+RUN dpkg -i /tmp/ralph-core_3.0.0-59_amd64.deb
 RUN apt-get -f install
 
 ENV PATH=/opt/ralph/ralph-core/bin/:$PATH
+
+ARG RALPH_LOCAL_DIR="/var/local/ralph"
+ENV RALPH_CONF_DIR="/etc/ralph"
+ENV RALPH_LOCAL_DIR=$RALPH_LOCAL_DIR
 
 ENV RALPH_ADMIN_USERNAME=ralph
 ENV RALPH_ADMIN_PASSWORD=ralph
 ENV RALPH_ADMIN_EMAIL=admin@ralph.com
 
-# TODO: remove this envs
-# DB
-ENV DATABASE_NAME=ralph_ng
-ENV DATABASE_USER=ralph_ng
-ENV DATABASE_PASSWORD=ralph_ng
-ENV DATABASE_HOST=127.0.0.1
-ENV DATABASE_PORT=3306
-ENV DATABASE_ENGINE='transaction_hooks.backends.mysql'
-
-# Redis
-ENV REDIS_HOST=127.0.0.1
-ENV REDIS_PORT=6379
-ENV REDIS_DB=0
-ENV REDIS_PASSWORD=""
-
-COPY docker-entrypoint.sh /var/local/ralph/
-COPY createsuperuser.py /var/local/ralph/
+COPY docker-entrypoint.sh $RALPH_LOCAL_DIR
+COPY createsuperuser.py $RALPH_LOCAL_DIR
+COPY start-ralph.sh $RALPH_LOCAL_DIR
+COPY init-ralph.sh $RALPH_LOCAL_DIR
 
 ENTRYPOINT ["/var/local/ralph/docker-entrypoint.sh"]
-
-# TODO: add command
+CMD ["start"]
