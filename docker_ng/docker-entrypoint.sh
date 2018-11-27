@@ -1,7 +1,16 @@
 #!/bin/bash
 set -e
+FIRST_RUN_FILENAME="docker_first_run"
+RALPH_CONF_DIR="/etc/ralph"
+RALPH_LOCAL_DIR="/var/local/ralph"
 
-db_env_variables=(
+if [ -f "${RALPH_LOCAL_DIR}/${FIRST_RUN_FILENAME}" ]; then
+    exit 0
+fi
+
+touch "${RALPH_LOCAL_DIR}/${FIRST_RUN_FILENAME}"
+
+DB_ENV_VARIABLES=(
     DATABASE_NAME
     DATABASE_USER
     DATABASE_PASSWORD
@@ -9,17 +18,18 @@ db_env_variables=(
     DATABASE_PORT
     DATABASE_ENGINE
 )
-db_conf_path="/etc/ralph/conf.d/database.conf"
-db_conf_path="/tmp/docker_ng/database.conf"
+# TODO: /etc/ralph/conf.d as variable
+DB_CONF_PATH="${RALPH_CONF_DIR}/conf.d/database.conf"
+DB_CONF_PATH="/tmp/docker_ng/database.conf"
 
-redis_env_variables=(
+REDIS_ENV_VARIABLES=(
     REDIS_HOST
     REDIS_PORT
     REDIS_DB
     REDIS_PASSWORD
 )
-redis_conf_path="/etc/ralph/conf.d/redis.conf"
-redis_conf_path="/tmp/docker_ng/redis.conf"
+REDIS_CONF_PATH="${RALPH_CONF_DIR}/conf.d/redis.conf"
+REDIS_CONF_PATH="/tmp/docker_ng/redis.conf"
 
 function push_env_vars_to_config() {
     local conf_path=$1
@@ -33,18 +43,20 @@ function push_env_vars_to_config() {
     done
 }
 
-push_env_vars_to_config "$db_conf_path" "${db_env_variables[@]}"
+push_env_vars_to_config "$DB_CONF_PATH" "${DB_ENV_VARIABLES[@]}"
+push_env_vars_to_config "$REDIS_CONF_PATH" "${REDIS_ENV_VARIABLES[@]}"
 
-export DEBIAN_FRONTEND=noninteractive
-
-#cd $RALPH_DIR
+set -a
+source ${RALPH_CONF_DIR}/ralph.conf
+source ${RALPH_CONF_DIR}/conf.d/database.conf
+source ${RALPH_CONF_DIR}/conf.d/redis.conf
 
 ralph migrate --noinput
 
 # pass the error (ex. when user already exist);
 # by muting the error, this script could be use to upgrade data container too
 ralph createsuperuser --noinput --username ralph --email ralph@allegro.pl || true
-python3 /var/local/ralph/createsuperuser.py
+python3 ${RALPH_LOCAL_DIR}/createsuperuser.py
 
 ralph collectstatic --noinput
 ralph sitetree_resync_apps

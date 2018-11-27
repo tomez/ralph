@@ -9,6 +9,8 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && apt-get -y install apt-transport-https gnupg2 ca-certificates
 RUN apt-key adv --keyserver  hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61
 RUN sh -c "echo 'deb https://dl.bintray.com/vi4m/ralph wheezy main' >  /etc/apt/sources.list.d/vi4m_ralph.list"
@@ -26,6 +28,7 @@ COPY docker-entrypoint.sh /var/local/ralph/
 
 ENV PATH=/opt/ralph/ralph-core/bin/:$PATH
 
+# TODO: remove this envs
 # DB
 ENV DATABASE_NAME=ralph_ng
 ENV DATABASE_USER=ralph_ng
@@ -39,3 +42,6 @@ ENV REDIS_HOST=127.0.0.1
 ENV REDIS_PORT=6379
 ENV REDIS_DB=0
 ENV REDIS_PASSWORD=""
+
+# TODO: add entrypoint
+# TODO: add command
