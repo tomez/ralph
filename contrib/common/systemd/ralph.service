@@ -9,7 +9,7 @@ WorkingDirectory=/var/local/ralph
 ExecStart=/opt/ralph/ralph-core/bin/gunicorn -c /var/local/ralph/gunicorn.ini ralph.wsgi
 Environment="DJANGO_SETTINGS_MODULE=ralph.settings.prod"
 EnvironmentFile=/etc/ralph/ralph.conf
-EnvironmentFile=-/etc/ralph/conf.d/*
+EnvironmentFile=-/etc/ralph/conf.d/*.conf
 
 [Install]
 WantedBy=multi-user.target
