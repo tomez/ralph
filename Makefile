@@ -4,9 +4,14 @@ TEST?=ralph
 
 package: build-package upload-package
 
-build-package:
+build-package-docker:
 	rm -rf ./build 2>/dev/null 1>/dev/null
 	./packaging/build-package.sh
+	cp ../*.deb /built
+
+build-package:
+	docker build -f Dockerfile-deb -t ralph-deb .
+	docker run -i -v $(shell pwd)/build:/built ralph-deb:latest
 
 upload-package:
 	./packaging/upload-package.sh
