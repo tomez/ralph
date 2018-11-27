@@ -23,10 +23,12 @@ COPY ralph-core_3.0.0-48_amd64.deb /tmp
 RUN dpkg -i /tmp/ralph-core_3.0.0-48_amd64.deb
 RUN apt-get -f install
 
-COPY createsuperuser.py /var/local/ralph/
-COPY docker-entrypoint.sh /var/local/ralph/
-
 ENV PATH=/opt/ralph/ralph-core/bin/:$PATH
+
+
+ENV RALPH_ADMIN_USERNAME=ralph
+ENV RALPH_ADMIN_PASSWORD=ralph
+ENV RALPH_ADMIN_EMAIL=admin@ralph.com
 
 # TODO: remove this envs
 # DB
@@ -44,4 +46,9 @@ ENV REDIS_DB=0
 ENV REDIS_PASSWORD=""
 
 # TODO: add entrypoint
+COPY docker-entrypoint.sh /var/local/ralph/
+COPY createsuperuser.py /var/local/ralph/
+
+ENTRYPOINT ["/var/local/ralph/docker-entrypoint.sh"]
+
 # TODO: add command

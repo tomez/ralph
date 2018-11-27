@@ -1,15 +1,20 @@
 #!/usr/bin/python
 import os
+
 import django
-from django.contrib.auth import get_user_model
 
-
+# TODO: to remove
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ralph.settings")
 django.setup()
 
-print('Updating superuser info')
-u = get_user_model().objects.get(username='ralph')
-u.set_password('ralph')
-u.is_superuser = True
-u.is_staff = True
-u.save()
+
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+username = os.environ['RALPH_ADMIN_USERNAME']
+password = os.environ['RALPH_ADMIN_PASSWORD']
+email = os.environ['RALPH_ADMIN_EMAIL']
+
+if not User.objects.filter(username=username).exists():
+    User.objects.create_superuser(username, email, password)

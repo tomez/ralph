@@ -4,12 +4,6 @@ FIRST_RUN_FILENAME="docker_first_run"
 RALPH_CONF_DIR="/etc/ralph"
 RALPH_LOCAL_DIR="/var/local/ralph"
 
-if [ -f "${RALPH_LOCAL_DIR}/${FIRST_RUN_FILENAME}" ]; then
-    exit 0
-fi
-
-touch "${RALPH_LOCAL_DIR}/${FIRST_RUN_FILENAME}"
-
 DB_ENV_VARIABLES=(
     DATABASE_NAME
     DATABASE_USER
@@ -47,15 +41,12 @@ push_env_vars_to_config "$DB_CONF_PATH" "${DB_ENV_VARIABLES[@]}"
 push_env_vars_to_config "$REDIS_CONF_PATH" "${REDIS_ENV_VARIABLES[@]}"
 
 set -a
-source ${RALPH_CONF_DIR}/ralph.conf
-source ${RALPH_CONF_DIR}/conf.d/database.conf
-source ${RALPH_CONF_DIR}/conf.d/redis.conf
+#source ${RALPH_CONF_DIR}/ralph.conf
+#source ${RALPH_CONF_DIR}/conf.d/database.conf
+#source ${RALPH_CONF_DIR}/conf.d/redis.conf
 
 ralph migrate --noinput
 
-# pass the error (ex. when user already exist);
-# by muting the error, this script could be use to upgrade data container too
-ralph createsuperuser --noinput --username ralph --email ralph@allegro.pl || true
 python3 ${RALPH_LOCAL_DIR}/createsuperuser.py
 
 ralph collectstatic --noinput
