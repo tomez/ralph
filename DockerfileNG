@@ -25,7 +25,6 @@ RUN apt-get -f install
 
 ENV PATH=/opt/ralph/ralph-core/bin/:$PATH
 
-
 ENV RALPH_ADMIN_USERNAME=ralph
 ENV RALPH_ADMIN_PASSWORD=ralph
 ENV RALPH_ADMIN_EMAIL=admin@ralph.com
