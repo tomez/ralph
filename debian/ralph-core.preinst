@@ -1,0 +1,2 @@
+#!/bin/bash
+adduser --system ralphsrv --home /var/local/ralph --group
