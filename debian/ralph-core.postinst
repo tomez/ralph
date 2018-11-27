@@ -2,13 +2,6 @@
 
 set -e
 
-if [ -z "$2" ]; then
-  chown ralphsrv:ralphsrv /var/log/ralph
-else
-  /opt/ralph/ralph-core/bin/ralph migrate
-  /opt/ralph/ralph-core/bin/ralph sitetree_resync_apps
-fi
-
-#DEBHELPER#
+chown ralphsrv:ralphsrv /var/log/ralph
 
 exit 0
