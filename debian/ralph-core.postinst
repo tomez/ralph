@@ -1,15 +1,21 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 . /usr/share/debconf/confmodule
 
-function on_install {
+collect_static () {
+    set -a
+    . /etc/ralph/ralph.conf
+    set +a
+    /opt/ralph/ralph-core/bin/ralph collectstatic --noinput
+}
+on_install () {
     chown ralphsrv:ralphsrv /var/log/ralph
 }
 
-function on_configure {
+on_configure () {
     db_get ralphsrv/use_default
-    if [ "$RET" == "false" ] ; then
+    if [ "$RET" = "false" ] ; then
         db_get ralphsrv/database_engine
         DATABASE_ENGINE=$RET
         db_get ralphsrv/database_username
@@ -23,7 +29,7 @@ function on_configure {
         db_get ralphsrv/database_name
         DATABASE_NAME=$RET
 
-        if [ "$DATABASE_ENGINE" == "mysql" ] ; then
+        if [ "$DATABASE_ENGINE" = "mysql" ] ; then
             DATABASE_ENGINE_DRIVER=transaction_hooks.backends.mysql
         elif [ $DATABASE_ENGINE = "postgresql" ] ; then
             DATABASE_ENGINE_DRIVER=transaction_hooks.backends.postgresql_psycopg2
@@ -40,14 +46,26 @@ EOF
     fi
 }
 
+
+
 case "$1" in
-    install)
-        on_install
-        on_configure
-    ;;
-    configure)
-        on_configure
-    ;;
+  install)
+    on_install
+      ;;
+  configure)
+    on_configure
+    collect_static
+      ;;
+
+  abort-upgrade|abort-remove|abort-deconfigure)
+      ;;	
+
+  *)
+    echo "postinst called with unknown argument \`$1'" >&2
+    exit 1
+      ;;
 esac
+
+#DEBHELPER#
 
 exit 0
