@@ -39,6 +39,7 @@ ENV RALPH_ADMIN_EMAIL=admin@ralph.com
 COPY provision/docker-entrypoint.sh \
     provision/createsuperuser.py \
     provision/start-ralph.sh \
+    provision/wait-for-it.sh \
     provision/init-ralph.sh $RALPH_LOCAL_DIR/
 
 ENTRYPOINT ["/var/local/ralph/docker-entrypoint.sh"]
