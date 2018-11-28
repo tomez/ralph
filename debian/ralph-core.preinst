@@ -1,2 +1,24 @@
-#!/bin/bash
-adduser --system ralphsrv --home /var/local/ralph --group
+#!/bin/sh
+set -e
+
+case "$1" in
+  install)
+    adduser --system ralphsrv --home /var/local/ralph --group
+    ;;
+
+  upgrade)
+
+    ;;
+
+  abort-upgrade)
+    ;;
+
+  *)
+    echo "preinst called with unknown argument \`$1'" >&2
+    exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0
