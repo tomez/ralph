@@ -9,8 +9,8 @@ collect_static () {
     set +a
     /opt/ralph/ralph-core/bin/ralph collectstatic --noinput
 }
-on_install () {
-    chown ralphsrv:ralphsrv /var/log/ralph
+fix_ownerships () {
+    chown -R ralphsrv:ralphsrv /var/log/ralph /var/local/ralph/media
 }
 
 on_configure () {
@@ -50,11 +50,12 @@ EOF
 
 case "$1" in
   install)
-    on_install
+    fix_ownerships
       ;;
   configure)
     on_configure
     collect_static
+    fix_ownerships
       ;;
 
   abort-upgrade|abort-remove|abort-deconfigure)
