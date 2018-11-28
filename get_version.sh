@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -eu
 
 # This script generate version from git tags (only from annotated tags)
 # Example of the output of the script:
@@ -12,7 +12,7 @@ set -e
 #   $ echo "Lorem ipsum" > example_file
 #   $ git add example_file
 #   $ git commit -m "Add file"
-#   [master de9d514] feature commit
+#   [ng de9d514] feature commit
 #    1 file changed, 1 insertion(+), 1 deletion(-)
 #
 #   $ bash get_version.sh
@@ -24,8 +24,8 @@ set -e
 #   $ bash get_version.sh
 #   0.1.1-feature-APPCONSOLE-123-SNAPSHOT
 #
-#   $ git checkout master
-#   Switched to branch 'master'
+#   $ git checkout ng
+#   Switched to branch 'ng'
 #
 #   $ git tag -a 0.1.1 -m "0.1.1"
 #   $ bash ~/workspace/version-bash/get_version.sh
@@ -37,7 +37,7 @@ else
     sed_command="sed"
 fi
 
-current_branch=`git rev-parse --abbrev-ref HEAD`
+current_branch=$(git rev-parse --abbrev-ref HEAD)
 
 die(){
     echo "$1"
@@ -52,10 +52,17 @@ show_version(){
 # bump PATH number of version complies with semantic versioning
 # version format MAJOR.MINOR.PATCH - http://semver.org/
 generate_next_version(){
-    major_and_minor=`echo "$1" | cut -d '.' -f1-2`
-    path_number=`echo "$1" | cut -d '.' -f3`
-    incremented_patch=$((path_number+1))
-    next_version="${major_and_minor}.${incremented_patch}"
+    current_dateversion=$(echo "$1" | cut -d '.' -f1)
+    current_path_number=$(echo "$1" | cut -d '.' -f2)
+    new_dateversion=$(date +"%Y%m%d")
+
+    if [[ $current_dateversion ==  $new_dateversion ]]; then
+        incremented_patch=$((current_path_number+1))
+    else
+        incremented_patch="1"
+    fi
+
+    next_version="${new_dateversion}.${incremented_patch}"
 }
 
 
@@ -63,19 +70,19 @@ if [ -z "$current_branch" ]; then
     die "Empty commits list on this branch or you didn't commit anything"
 fi
 
-current_tag=`git describe`
+current_tag=$(git describe)
 
 if [ -z "$current_tag" ]; then
     die "you don't have any tag on branch : ${current_branch}"
 fi
 
 # check if any of commit has been added after last tag
-changes_above_tag=`echo $current_tag | $sed_command -r '/^.*-[0-9]+-[a-z0-9].*/p' | wc -l | xargs`
+changes_above_tag=$(echo $current_tag | $sed_command -r '/^.*-[0-9]+-[a-z0-9].*/p' | wc -l | xargs)
 
-clean_tag=`git describe --abbrev=0`
+clean_tag=$(git describe --abbrev=0)
 
 
-if [ "$current_branch" == "master" ]; then
+if [[ "$current_branch" == "ng" ]]; then
     if [ "$changes_above_tag" == 1 ]; then
         version="${clean_tag}"
     else
@@ -88,7 +95,7 @@ else
     bumped_clean_tag="$next_version"
     # Sanitize version - all characters that do not match [A-Za-z0-9._-]
     # group are replaced with `-`
-    sanitized_branch_name=`echo $current_branch | $sed_command 's/[^a-zA-Z0-9]/-/g'`
+    sanitized_branch_name=$(echo $current_branch | $sed_command 's/[^a-zA-Z0-9]/-/g')
     version="${bumped_clean_tag}-${sanitized_branch_name}-SNAPSHOT"
 fi
 show_version "$version"
