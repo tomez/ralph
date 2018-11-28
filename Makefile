@@ -12,12 +12,15 @@ build-package-docker:
 	cp debian/changelog /volume/debian/changelog
 
 build-package:
-	docker build -f Dockerfile-deb -t ralph-deb .
+	docker build -f docker_ng/Dockerfile-deb -t ralph-deb .
 	docker run -i -v $(shell pwd):/volume ralph-deb:latest
 	docker image rm --force ralph-deb:latest
 
 upload-package:
 	./packaging/upload-package.sh
+
+build-docker:
+	docker build -f docker_ng/Dockerfile-prod -t allegro/ralphng:$(shell ./get_version.sh) ./docker_ng/
 
 install-js:
 	npm install

@@ -9,7 +9,7 @@ RUN apt-get clean && apt-get update
 RUN apt-get -y install build-essential debhelper devscripts equivs dh-virtualenv \
     git libmysqlclient-dev python3 python3-dev libffi-dev nodejs npm
 
-ADD . $RALPH_DIR
+COPY . $RALPH_DIR
 
 WORKDIR $RALPH_DIR
 CMD make build-package-docker

@@ -3,7 +3,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: ./DockerfileNG
+      dockerfile: Dockerfile-prod
     restart: always
     ports:
       - "8000"
