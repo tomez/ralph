@@ -1,5 +1,33 @@
 version: '3'
 services:
+  web:
+    build:
+      context: .
+      dockerfile: ./DockerfileNG
+    restart: always
+    ports:
+      - "8000"
+    volumes:
+      - ralph_static:/var/local/ralph
+      - ralph_media:/usr/share/ralph/static
+    links:
+      - db:db
+      - redis:redis
+    env_file:
+      - ./ralph.env
+
+  nginx:
+    image: nginx
+    restart: always
+    ports:
+      - "80:80"
+    links:
+      - web:web
+    volumes:
+      - ./ralph.conf.nginx:/etc/nginx/conf.d/default.conf
+      - ralph_media:/opt/static
+      - ralph_static:/opt/media
+
   db:
     image: mysql:5.7
     environment:
@@ -8,21 +36,8 @@ services:
       MYSQL_USER: ralph_ng
       MYSQL_PASSWORD: ralph_ng
     volumes:
-      - dbdata:/var/lib/mysql
+      - ralph_dbdata:/var/lib/mysql
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-
-  web:
-    build:
-      context: ./provision
-      dockerfile: ./DockerfileNG
-    restart: always
-    ports:
-      - "8000"
-    links:
-      - db:db
-      - redis:redis
-    env_file:
-      - ./ralph.env
 
   redis:
     image: redis:3.0
@@ -39,4 +54,6 @@ services:
       - ./ralph.env
 
 volumes:
-  dbdata:
+  ralph_dbdata:
+  ralph_media:
+  ralph_static:
