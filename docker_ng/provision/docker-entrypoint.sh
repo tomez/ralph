@@ -11,7 +11,7 @@ DB_ENV_VARIABLES=(
     DATABASE_PORT
     DATABASE_ENGINE
 )
-DB_CONF_PATH="${RALPH_CONF_DIR}/conf.d/databases.conf"
+DB_CONF_PATH="${RALPH_CONF_DIR}/conf.d/database.conf"
 
 REDIS_ENV_VARIABLES=(
     REDIS_HOST
