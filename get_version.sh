@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -eu
 
 # This script generate version from git tags (only from annotated tags)

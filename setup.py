@@ -17,7 +17,6 @@ def get_version():
         os.path.abspath(os.path.dirname(__file__)), 'get_version.sh'
     )
     ver = subprocess.check_output([script], shell=True)
-    import ipdb; ipdb.set_trace()
     return ver.decode().strip()
 
 
