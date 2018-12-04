@@ -6,7 +6,7 @@ package: build-package upload-package
 
 build-package-docker:
 	rm -rf ./build 2>/dev/null 1>/dev/null
-	./packaging/build-package.sh
+	./packaging/build-package-ng.sh
 	mkdir -p /volume/build
 	cp ../*.deb /volume/build
 	cp debian/changelog /volume/debian/changelog

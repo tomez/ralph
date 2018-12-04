@@ -1,10 +1,11 @@
 #!/bin/bash
 
-set -e
+set -eu
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 # ignore warnings about python librariers deps
 export DEB_DH_SHLIBDEPS_ARGS_ALL="--dpkg-shlibdeps-params=--ignore-missing-info"
 SRC_DIR="$DIR/.."
+VERSION=$($SRC_DIR/get_version.sh)
 
 function build_package {
 	cd $SRC_DIR
