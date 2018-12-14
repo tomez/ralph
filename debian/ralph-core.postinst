@@ -7,7 +7,9 @@ collect_static () {
     set -a
     . /etc/ralph/ralph.conf
     set +a
-    /opt/ralph/ralph-core/bin/ralph collectstatic --noinput
+    echo "Collecting django static files..."
+    /opt/ralph/ralph-core/bin/ralph collectstatic --noinput > /dev/null
+    echo "Static files collected successfuly."
 }
 fix_ownerships () {
     chown -R ralphsrv:ralphsrv /var/log/ralph /var/local/ralph/media
